@@ -1,8 +1,10 @@
 import os
 from pathlib import Path
 import streamlit as st
-from pyairtable import Table
-from mc_form.questions import Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8
+import matplotlib.pyplot as plt
+from pyairtable.api.table import Table
+from mc_form.questions import QUESTIONS 
+from mc_form.cross_wordcloud import wc_generator
 
 
 @st.cache(persist=True, allow_output_mutation=True)
@@ -20,23 +22,20 @@ table_name = st.secrets["table"]
 table = get_airtable(api_key=api_key, base_id=base_id, table_name=table_name)
 del api_key, base_id, table_name
 
+sw_path = os.path.join(Path(__file__).parent, "stopwords.txt")
+stopwords = open(sw_path, "r").read().split()
+
 answers = []
 with placeholder.container():
     st.write("Responde las siguientes preguntas:")
-    answers.append(st.text_area(Q1))
-    answers.append(st.text_area(Q2))
-    answers.append(st.text_area(Q3))
-    answers.append(st.text_area(Q4))
-    answers.append(st.text_area(Q5))
-    answers.append(st.text_area(Q6))
-    answers.append(st.text_area(Q7))
-    answers.append(st.text_area(Q8))
+    for question in QUESTIONS.values():
+        answers.append(st.text_area(question))
 
     submitted = st.button("Enviar")
 
 if submitted:
     # Persisting the answers
-    names = ["question" + str(id + 1) for id in range(8)] + ["Status"]
+    names = ["question" + str(id + 1) for id in range(len(QUESTIONS))] + ["Status"]
     if "" in answers:
         answers.append("Incomplete")
     else:
@@ -44,6 +43,29 @@ if submitted:
     data = dict(zip(names, answers))
     table.create(data)
 
-    print(data)
+    records = table.all(fields=["question7", "question9"])
+    text_data = [
+        record["fields"].get("question7", "") + " " + record["fields"].get("question9", "")
+        for record in records
+    ]
+    text = " ".join(text_data).upper()
+    img_array = wc_generator(text=text, stopwords=stopwords)
+
     placeholder.empty()
-    st.markdown("# ¡Gracias!")
+    st.markdown(
+    """
+    ## ¡Gracias!
+
+    Recuerda que a pesar de nuestros temores, de nuestras fallas, de nuestras debilidades, tenemos
+    a nuestra disposición la cruz de Cristo; allí podemos clavarlo todo en la cruz, dejar atrás
+    todo pecado, peso y carga, y correr sin rendirnos en pos de Jesucristo. ¡Las naciones nos
+    esperan!
+    """
+    )
+
+    fig = plt.figure()
+    fig.patch.set_facecolor('xkcd:black')
+    fig.tight_layout()
+    plt.imshow(img_array)
+    plt.axis("off")
+    st.pyplot(fig)
