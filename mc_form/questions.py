@@ -16,3 +16,31 @@ QUESTIONS: dict = {
     "Dios en nuestras vidas. ¿Estás dispuesto a darle la prioridad que el discipulado merece en "\
     "tu vida?",
 }
+
+BASE_TEXT = [
+    "Redes sociales.",
+    "Malas amistades.",
+    "Pecado",
+    "Malos pensamientos.",
+    "Trabajo.",
+    "Estudio.",
+    "Sueños.",
+    "Planes.",
+    "Carrera.",
+    "Universidad.",
+    "Colegio",
+    "Noviazgo.",
+    "Apartarme de mi familia.",
+    "Dejar atrás a mis amigos.",
+    "Negarme a mí mismo.",
+    "El orgullo.",
+    "Enfrentarme a la soledad.",
+    "Experimentar verdadera persecución.",
+    "Los recursos y la provisión.",
+    "El miedo a lo desconocido.",
+    "Temor.",
+    "Vergüenza.",
+    "Miedo al fracaso.",
+    "Enfrentar pruebas.",
+    "Pensar que no seré capaz, falta de habilidades y preparación.",
+]

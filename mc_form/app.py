@@ -3,7 +3,7 @@ from pathlib import Path
 import streamlit as st
 import matplotlib.pyplot as plt
 from pyairtable.api.table import Table
-from mc_form.questions import QUESTIONS 
+from mc_form.questions import QUESTIONS, BASE_TEXT
 from mc_form.cross_wordcloud import wc_generator
 
 
@@ -43,12 +43,12 @@ if submitted:
     data = dict(zip(names, answers))
     table.create(data)
 
-    records = table.all(fields=["question7", "question9"])
+    # records = table.all(fields=["question7", "question9"])
     text_data = [
-        record["fields"].get("question7", "") + " " + record["fields"].get("question9", "")
-        for record in records
-    ]
+        data.get("question7", "") + " " + data.get("question9", "")
+    ] + BASE_TEXT
     text = " ".join(text_data).upper()
+    text = (text + " ") * 2 
     img_array = wc_generator(text=text, stopwords=stopwords)
 
     placeholder.empty()
